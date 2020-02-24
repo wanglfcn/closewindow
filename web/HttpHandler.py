@@ -2,6 +2,7 @@ import logging
 from tornado.web import RequestHandler
 from services.RelayService import *
 from services.Scheduler import *
+import json
 
 class OpenWindowHandler(RequestHandler):
     def get(self, *args, **kwargs):
@@ -31,9 +32,15 @@ class GetJobsHandler(RequestHandler):
     def get(self, *args, **kwargs):
         logging.getLogger().info('get all jobs')
         jobs = getJobs()
-        val = 'jobs: %r' % (jobs,)
-        logging.getLogger().info('jobs ' + val)
-        self.write('{"code":0,"status":"success"}')
+        resp = {
+            'code': 0,
+            'status': 'success',
+            'jobs': ['%s' % (job,) for job in jobs]
+        }
+
+        result = json.dumps(resp)
+
+        self.write(result)
 
 def PauseJobsHandler(RequestHandler):
     def get(self, *args, **kwargs):

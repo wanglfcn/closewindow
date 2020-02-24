@@ -47,8 +47,9 @@ if __name__ == '__main__':
 
     app = HTTPServer(app)
     app.bind(options.port)
-    app.start(0)
+    app.start(4)
 
+    Scheduler.init()
     Scheduler.startJobs()
 
     IOLoop.current().start()

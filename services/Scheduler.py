@@ -1,12 +1,9 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from tornado.options import options
+from tornado.options import options, define
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from services.RelayService import *
 
-job_store = {
-    'default': SQLAlchemyJobStore(url=options.db_url)
-}
 
 executors = {
     'default': ThreadPoolExecutor(20),
@@ -18,12 +15,15 @@ job_default = {
     'max_instances': 5
 }
 
-scheduler = BackgroundScheduler(jobStore=job_store, executors=executors, job_defaults=job_default)
-scheduler.add_job(openWindow, id='openAllWindow', replace_existing=True, trigger='cron', hour='18', minute='0', second='0')
-scheduler.add_job(closeWindow, id='closeAllWindow', replace_existing=True, trigger='cron', hour='19', minute='30', second='0')
-scheduler.add_job(openFan, id='powerOnFan', replace_existing=True, trigger='cron', hour='18', minute='1', second='0')
-scheduler.add_job(closeWindow, id='powerOffFan', replace_existing=True, trigger='cron', hour='19', minute='31', second='0')
-scheduler.add_job(takePhoto, id="takePhoto", replace_existing=True, trigger='cron', hour='18,19', minute='2,32', second='0')
+scheduler = BackgroundScheduler(executors=executors, job_defaults=job_default, timezone='Asia/Shanghai')
+def init():
+    scheduler.add_jobstore('sqlalchemy', url=options.db_url)
+
+    scheduler.add_job(openWindow, id='openAllWindow', replace_existing=True, trigger='cron', hour='18', minute='0', second='0')
+    scheduler.add_job(closeWindow, id='closeAllWindow', replace_existing=True, trigger='cron', hour='19', minute='30', second='0')
+    scheduler.add_job(openFan, id='powerOnFan', replace_existing=True, trigger='cron', hour='18', minute='1', second='0')
+    scheduler.add_job(closeWindow, id='powerOffFan', replace_existing=True, trigger='cron', hour='19', minute='31', second='0')
+    scheduler.add_job(takePhoto, id="takePhoto", replace_existing=True, trigger='cron', hour='18,19', minute='2,32', second='0')
 
 def startJobs():
     scheduler.start()
