@@ -30,7 +30,9 @@ class CloseFanHandler(RequestHandler):
 class GetJobsHandler(RequestHandler):
     def get(self, *args, **kwargs):
         logging.getLogger().info('get all jobs')
-        getJobs()
+        jobs = getJobs()
+        val = 'jobs: %r' % (jobs,)
+        logging.getLogger().info('jobs ' + val)
         self.write('{"code":0,"status":"success"}')
 
 def PauseJobsHandler(RequestHandler):
