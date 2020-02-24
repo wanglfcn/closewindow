@@ -2,7 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from tornado.options import options
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-from RelayService import *
+from services.RelayService import *
 
 job_store = {
     'default': SQLAlchemyJobStore(url=options.db_url)
