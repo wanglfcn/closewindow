@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     app = HTTPServer(app)
     app.bind(options.port)
-    app.start(4)
+    app.start(1)
 
     Scheduler.init()
     Scheduler.startJobs()
