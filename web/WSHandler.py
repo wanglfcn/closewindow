@@ -61,62 +61,66 @@ class WebSocketClient:
             'modify_job': self.modifyJob
         }
 
+        seq = '0'
+        if 'seq' in msg:
+            seq = str(msg['seq'])
+
         func = handler[msg_type]
         if func:
-            func(msg)
+            func(msg, seq)
 
-    def handleOpen(self, msg):
+    def handleOpen(self, msg, seq):
         RelayService.openWindow()
-        resp = {'type': 'log', 'content': 'window opening'}
+        resp = {'type': 'resp', 'content': 'window opening', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def handleClose(self, msg):
+    def handleClose(self, msg, seq):
         RelayService.closeWindow()
-        resp = {'type': 'log', 'content': 'window closing'}
+        resp = {'type': 'resp', 'content': 'window closing', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def powerOnFan(self, msg):
+    def powerOnFan(self, msg, seq):
         RelayService.openFan()
-        resp = {'type': 'log', 'content': 'power on fan'}
+        resp = {'type': 'resp', 'content': 'power on fan', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def powerOffFan(self, msg):
+    def powerOffFan(self, msg, seq):
         RelayService.closeFan()
-        resp = {'type': 'log', 'content': 'power off fan'}
+        resp = {'type': 'resp', 'content': 'power off fan', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def getJobs(self, msg):
+    def getJobs(self, msg, seq):
         jobs = RelayService.getJobs()
-        resp = {'type': 'log', 'jobs': jobs}
+        resp = {'type': 'resp', 'jobs': jobs, 'seq': seq, 'content': '%s' % (jobs,)}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def pauseJobs(self, msg):
+    def pauseJobs(self, msg, seq):
         RelayService.pause()
-        resp = {'type': 'log', 'content': 'pause all jobs'}
+        resp = {'type': 'resp', 'content': 'pause all jobs', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def resumeJobs(self, msg):
+    def resumeJobs(self, msg, seq):
         RelayService.resume()
-        resp = {'type': 'log', 'content': 'resume all jobs'}
+        resp = {'type': 'resp', 'content': 'resume all jobs', 'seq': seq}
         if self.conn:
             self.conn.write_message(json.dumps(resp))
 
-    def modifyJob(self, msg):
+    def modifyJob(self, msg, seq):
         if 'job_id' in msg and 'time_params' in msg:
             job_id = msg['job_id']
             time_params = msg['time_params']
             job = RelayService.modityExecuteTime(job_id, time_params)
-            resp = {'type': 'log', 'content': 'modify job %s' % (job,)}
+            resp = {'type': 'resp', 'content': 'modify job %s' % (job,)}
             if self.conn:
                 self.conn.write_message(json.dumps(resp))
         else:
-            resp = {'type': 'log', 'content': 'missing job id or time params for modify job'}
+            resp = {'type': 'resp', 'content': 'missing job id or time params for modify job', 'seq': seq}
             if self.conn:
                 self.conn.write_message(json.dumps(resp))
 
