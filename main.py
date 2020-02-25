@@ -13,6 +13,7 @@ import sqlalchemy
 
 define('port', default=8000, type=int)
 define('ws_url', type=str)
+define('log_url', type=str)
 define('db_url', type=str)
 define('power_delay_on', type=float)
 define('power_delay_off', type=float)

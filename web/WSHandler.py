@@ -3,6 +3,7 @@ import logging
 from tornado.options import options
 from tornado.websocket import websocket_connect
 from services import RelayService
+import requests
 import json
 import time
 
@@ -69,47 +70,46 @@ class WebSocketClient:
         if func:
             func(msg, seq)
 
+    def sendResp(self, msg):
+        if self.conn:
+            self.conn.write_message(json.dumps(msg))
+        requests.post(url=options.log_url, json=msg)
+
     def handleOpen(self, msg, seq):
         RelayService.openWindow()
         resp = {'type': 'resp', 'content': 'window opening', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
+
 
     def handleClose(self, msg, seq):
         RelayService.closeWindow()
         resp = {'type': 'resp', 'content': 'window closing', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def powerOnFan(self, msg, seq):
         RelayService.openFan()
         resp = {'type': 'resp', 'content': 'power on fan', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def powerOffFan(self, msg, seq):
         RelayService.closeFan()
         resp = {'type': 'resp', 'content': 'power off fan', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def getJobs(self, msg, seq):
         jobs = RelayService.getJobs()
         resp = {'type': 'resp', 'jobs': jobs, 'seq': seq, 'content': '%s' % (jobs,)}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def pauseJobs(self, msg, seq):
         RelayService.pause()
         resp = {'type': 'resp', 'content': 'pause all jobs', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def resumeJobs(self, msg, seq):
         RelayService.resume()
         resp = {'type': 'resp', 'content': 'resume all jobs', 'seq': seq}
-        if self.conn:
-            self.conn.write_message(json.dumps(resp))
+        self.sendResp(resp)
 
     def modifyJob(self, msg, seq):
         if 'job_id' in msg and 'time_params' in msg:
@@ -117,12 +117,10 @@ class WebSocketClient:
             time_params = msg['time_params']
             job = RelayService.modityExecuteTime(job_id, time_params)
             resp = {'type': 'resp', 'content': 'modify job %s' % (job,)}
-            if self.conn:
-                self.conn.write_message(json.dumps(resp))
+            self.sendResp(resp)
         else:
             resp = {'type': 'resp', 'content': 'missing job id or time params for modify job', 'seq': seq}
-            if self.conn:
-                self.conn.write_message(json.dumps(resp))
+            self.sendResp(resp)
 
 
 
