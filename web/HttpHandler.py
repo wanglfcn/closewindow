@@ -41,13 +41,13 @@ class GetJobsHandler(RequestHandler):
         result = json.dumps(resp)
         self.write(result)
 
-def PauseJobsHandler(RequestHandler):
+class PauseJobsHandler(RequestHandler):
     def get(self):
         logging.getLogger().info('pause jobs')
         pause()
         self.write('{"code":0,"status":"success"}')
 
-def ResumeJobsHandler(RequestHandler):
+class ResumeJobsHandler(RequestHandler):
     def get(self):
         logging.getLogger().info('resume jobs')
         resume()
