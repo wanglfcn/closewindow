@@ -38,19 +38,9 @@ class WebSocketClient:
             return
         try:
             msg = json.loads(message)
-            resp = {'type': 'log'}
             if msg and 'type' in msg:
-                if msg['type'] == 'open':
-                    RelayService.openWindow()
-                    resp['content'] = 'window opened'
-                    if self.conn:
-                        self.conn.write_message(json.dumps(resp))
-
-                elif msg['type'] == 'close':
-                    RelayService.closeWindow()
-                    resp['content'] = 'window closed'
-                    if self.conn:
-                        self.conn.write_message(json.dumps(resp))
+                msg_type = msg['type']
+                self.handleMsg(msg_type, msg)
         except Exception as e:
             logging.getLogger().error('process msg with exception %r', e)
 
@@ -58,5 +48,79 @@ class WebSocketClient:
     def on_close(self):
         logging.getLogger().info('on close')
         self.open()
+
+    def handleMsg(self, msg_type, msg):
+        handler = {
+            'open': self.handleOpen,
+            'close': self.handleClose,
+            'power_on_fan': self.powerOnFan,
+            'power_off_fan': self.powerOffFan,
+            'get_jobs': self.getJobs,
+            'pause_jobs': self.pauseJobs,
+            'resume_jobs': self.resumeJobs,
+            'modify_job': self.modifyJob
+        }
+
+        func = handler[msg_type]
+        if func:
+            func(msg)
+
+    def handleOpen(self, msg):
+        RelayService.openWindow()
+        resp = {'type': 'log', 'content': 'window opening'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def handleClose(self, msg):
+        RelayService.closeWindow()
+        resp = {'type': 'log', 'content': 'window closing'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def powerOnFan(self, msg):
+        RelayService.openFan()
+        resp = {'type': 'log', 'content': 'power on fan'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def powerOffFan(self, msg):
+        RelayService.closeFan()
+        resp = {'type': 'log', 'content': 'power off fan'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def getJobs(self, msg):
+        jobs = RelayService.getJobs()
+        resp = {'type': 'log', 'jobs': jobs}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def pauseJobs(self, msg):
+        RelayService.pause()
+        resp = {'type': 'log', 'content': 'pause all jobs'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def resumeJobs(self, msg):
+        RelayService.resume()
+        resp = {'type': 'log', 'content': 'resume all jobs'}
+        if self.conn:
+            self.conn.write_message(json.dumps(resp))
+
+    def modifyJob(self, msg):
+        if 'job_id' in msg and 'time_params' in msg:
+            job_id = msg['job_id']
+            time_params = msg['time_params']
+            job = RelayService.modityExecuteTime(job_id, time_params)
+            resp = {'type': 'log', 'content': 'modify job %s' % (job,)}
+            if self.conn:
+                self.conn.write_message(json.dumps(resp))
+        else:
+            resp = {'type': 'log', 'content': 'missing job id or time params for modify job'}
+            if self.conn:
+                self.conn.write_message(json.dumps(resp))
+
+
+
 
 
