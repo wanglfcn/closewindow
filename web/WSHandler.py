@@ -59,7 +59,8 @@ class WebSocketClient:
             'get_jobs': self.getJobs,
             'pause_jobs': self.pauseJobs,
             'resume_jobs': self.resumeJobs,
-            'modify_job': self.modifyJob
+            'modify_job': self.modifyJob,
+            'take_photo': self.takePhoto
         }
 
         seq = '0'
@@ -122,6 +123,10 @@ class WebSocketClient:
             resp = {'type': 'resp', 'content': 'missing job id or time params for modify job', 'seq': seq}
             self.sendResp(resp)
 
+    def takePhoto(self, msg, seq):
+        resp = {'type': 'resp', 'content': 'taking photo', 'seq': seq}
+        self.sendResp(resp)
+        RelayService.takePhoto()
 
 
 
