@@ -29,7 +29,7 @@ def make_app():
         (r"/get_jobs", web.HttpHandler.GetJobsHandler),
         (r"/pause_jobs", web.HttpHandler.PauseJobsHandler),
         (r"/resume_jobs", web.HttpHandler.ResumeJobsHandler),
-        (r"/modify_job", web.HttpHandler.ModifyJobByIdHandler)
+        (r"/modify_job", web.HttpHandler.ModifyJobByIdHandler),
         (r"/take_photo", web.HttpHandler.TakenPhoto)
     ])
 
