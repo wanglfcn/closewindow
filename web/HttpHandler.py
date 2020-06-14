@@ -85,3 +85,9 @@ class ModifyJobByIdHandler(RequestHandler):
                 'reason': '%s' % (e,)
             }
             self.write(json.dumps(resp))
+
+class TakenPhoto(RequestHandler):
+    def get(self):
+        logging.getLogger().info('taken photo')
+        self.write('{"code":0,"status":"success"}')
+        takePhoto()

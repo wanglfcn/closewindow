@@ -1,9 +1,12 @@
+import requests
+
 import RPi.GPIO as GPIO
 import logging
 from time import sleep
 from tornado.options import options
 from services.Scheduler import *
 import datetime
+from services.CameraService import *
 
 ON = False
 OFF = True
@@ -36,6 +39,8 @@ def closeWindow():
     run_date = datetime.datetime.now() + datetime.timedelta(seconds=options.power_delay_off)
     scheduler.add_job(resetCloseWindowRelay, 'date', run_date=run_date)
     logging.getLogger().info('close window')
+    msg = '{"code":0,"status":"success","msg":"window is closed"}'
+    requests.post(url=options.log_url, json=msg)
 
 def openWindow():
     initPortMode()
@@ -46,12 +51,16 @@ def openWindow():
     run_date = datetime.datetime.now() + datetime.timedelta(seconds=options.power_delay_off)
     scheduler.add_job(resetOpenWindowRelay, 'date', run_date=run_date)
     logging.getLogger().info('open window')
+    msg = '{"code":0,"status":"success","msg":"window is opened"}'
+    requests.post(url=options.log_url, json=msg)
 
 def closeFan():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(fan_relay_list, GPIO.OUT, initial=OFF)
     GPIO.output(fan_relay_list, OFF)
     logging.getLogger().info('close fan')
+    msg = '{"code":0,"status":"success","msg":"fan is closed"}'
+    requests.post(url=options.log_url, json=msg)
 
 def openFan():
     GPIO.setmode(GPIO.BOARD)
@@ -59,9 +68,17 @@ def openFan():
     GPIO.setup(fan_relay_list, GPIO.OUT, initial=OFF)
     GPIO.output(fan_relay_list, ON)
     logging.getLogger().info('open fan')
+    msg = '{"code":0,"status":"success","msg":"fan is opened"}'
+    requests.post(url=options.log_url, json=msg)
 
 def takePhoto():
     logging.getLogger().info('take photo')
+    c = CameraService()
+    fileName = c.takePhoto()
+    msg = '{"code":0,"status":"success","msg":"photo is taken file: %s"}' % (fileName,)
+    requests.post(url=options.log_url, json=msg)
+    files = {'file': open(fileName, 'rb')}
+    requests.post(url=options.image_url, files=files)
 
 def initPortMode():
     GPIO.setmode(GPIO.BOARD)

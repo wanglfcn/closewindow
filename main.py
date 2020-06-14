@@ -17,6 +17,8 @@ define('log_url', type=str)
 define('db_url', type=str)
 define('power_delay_on', type=float)
 define('power_delay_off', type=float)
+define('image_dir', type=str)
+define('image_url', type=str)
 
 def make_app():
     return tornado.web.Application([
@@ -28,6 +30,7 @@ def make_app():
         (r"/pause_jobs", web.HttpHandler.PauseJobsHandler),
         (r"/resume_jobs", web.HttpHandler.ResumeJobsHandler),
         (r"/modify_job", web.HttpHandler.ModifyJobByIdHandler)
+        (r"/take_photo", web.HttpHandler.TakenPhoto)
     ])
 
 def initLogger():
