@@ -13,7 +13,8 @@ OFF = True
 
 open_window_relay_list = (11,)
 close_window_relay_list = (13,)
-fan_relay_list = ()
+window_relay_switch = (15,)
+fan_relay_list = (16, 18)
 
 def __init__():
     initPortMode()
@@ -23,19 +24,24 @@ def __init__():
 def resetCloseWindowRelay():
     initPortMode()
     GPIO.output(close_window_relay_list, OFF)
+    GPIO.output(window_relay_switch, OFF)
     logging.getLogger().info('reset close relay to off')
 
 def resetOpenWindowRelay():
     initPortMode()
     GPIO.output(open_window_relay_list, OFF)
+    GPIO.output(window_relay_switch, OFF)
     logging.getLogger().info('reset open relay to off')
 
 
 def closeWindow():
     initPortMode()
+    GPIO.output(window_relay_switch, OFF)
     GPIO.output(open_window_relay_list, OFF)
     sleep(options.power_delay_on)
     GPIO.output(close_window_relay_list, ON)
+    sleep(options.power_delay_on)
+    GPIO.output(window_relay_switch, ON)
     run_date = datetime.datetime.now() + datetime.timedelta(seconds=options.power_delay_off)
     scheduler.add_job(resetCloseWindowRelay, 'date', run_date=run_date)
     logging.getLogger().info('close window')
@@ -44,10 +50,12 @@ def closeWindow():
 
 def openWindow():
     initPortMode()
+    GPIO.output(window_relay_switch, OFF)
     GPIO.output(close_window_relay_list, OFF)
     sleep(options.power_delay_on)
     GPIO.output(open_window_relay_list, ON)
     sleep(options.power_delay_on)
+    GPIO.output(window_relay_switch, ON)
     run_date = datetime.datetime.now() + datetime.timedelta(seconds=options.power_delay_off)
     scheduler.add_job(resetOpenWindowRelay, 'date', run_date=run_date)
     logging.getLogger().info('open window')
