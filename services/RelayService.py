@@ -11,10 +11,9 @@ from services.CameraService import *
 ON = False
 OFF = True
 
-open_window_relay_list = (11,)
-close_window_relay_list = (13,)
+open_window_relay_list = (11, 13)
 window_relay_switch = (15,)
-fan_relay_list = (16, 18)
+fan_relay_list = (12, 16)
 
 def __init__():
     initPortMode()
@@ -23,23 +22,22 @@ def __init__():
 
 def resetCloseWindowRelay():
     initPortMode()
-    GPIO.output(close_window_relay_list, OFF)
     GPIO.output(window_relay_switch, OFF)
+    GPIO.output(open_window_relay_list, OFF)
     logging.getLogger().info('reset close relay to off')
 
 def resetOpenWindowRelay():
     initPortMode()
-    GPIO.output(open_window_relay_list, OFF)
     GPIO.output(window_relay_switch, OFF)
+    GPIO.output(open_window_relay_list, OFF)
     logging.getLogger().info('reset open relay to off')
 
 
 def closeWindow():
     initPortMode()
     GPIO.output(window_relay_switch, OFF)
-    GPIO.output(open_window_relay_list, OFF)
     sleep(options.power_delay_on)
-    GPIO.output(close_window_relay_list, ON)
+    GPIO.output(open_window_relay_list, OFF)
     sleep(options.power_delay_on)
     GPIO.output(window_relay_switch, ON)
     run_date = datetime.datetime.now() + datetime.timedelta(seconds=options.power_delay_off)
@@ -51,7 +49,6 @@ def closeWindow():
 def openWindow():
     initPortMode()
     GPIO.output(window_relay_switch, OFF)
-    GPIO.output(close_window_relay_list, OFF)
     sleep(options.power_delay_on)
     GPIO.output(open_window_relay_list, ON)
     sleep(options.power_delay_on)
@@ -91,7 +88,6 @@ def takePhoto():
 def initPortMode():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(open_window_relay_list, GPIO.OUT, initial=OFF)
-    GPIO.setup(close_window_relay_list, GPIO.OUT, initial=OFF)
     GPIO.setup(window_relay_switch, GPIO.OUT, initial=OFF)
     GPIO.setup(fan_relay_list, GPIO.OUT, initial=OFF)
 
