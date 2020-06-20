@@ -92,6 +92,8 @@ def initPortMode():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(open_window_relay_list, GPIO.OUT, initial=OFF)
     GPIO.setup(close_window_relay_list, GPIO.OUT, initial=OFF)
+    GPIO.setup(window_relay_switch, GPIO.OUT, initial=OFF)
+    GPIO.setup(fan_relay_list, GPIO.OUT, initial=OFF)
 
 def cleanUp():
     GPIO.cleanup()
