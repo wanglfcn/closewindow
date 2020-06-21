@@ -17,11 +17,11 @@ def init():
     scheduler.add_executor(ThreadPoolExecutor(20))
     scheduler.add_executor(ProcessPoolExecutor(10), alias='processpool')
 
-    scheduler.add_job(RelayService.openWindow, id='openWindow', replace_existing=True, trigger='cron', hour='18', minute='0', second='0')
-    scheduler.add_job(RelayService.closeWindow, id='closeWindow', replace_existing=True, trigger='cron', hour='19', minute='30', second='0')
+    scheduler.add_job(RelayService.openWindow, id='openWindow', replace_existing=True, trigger='cron', hour='07', minute='0', second='0')
+    scheduler.add_job(RelayService.closeWindow, id='closeWindow', replace_existing=True, trigger='cron', hour='20', minute='00', second='0')
     scheduler.add_job(RelayService.openFan, id='powerOnFan', replace_existing=True, trigger='cron', hour='18', minute='1', second='0')
     scheduler.add_job(RelayService.closeFan, id='powerOffFan', replace_existing=True, trigger='cron', hour='19', minute='31', second='0')
-    scheduler.add_job(RelayService.takePhoto, id="takePhoto", replace_existing=True, trigger='cron', hour='18,19', minute='2,32', second='0')
+    scheduler.add_job(RelayService.takePhoto, id="takePhoto", replace_existing=True, trigger='cron', hour='7,20', minute='2', second='0')
 
 def startJobs():
     scheduler.start()
