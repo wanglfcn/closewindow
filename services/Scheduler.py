@@ -22,6 +22,7 @@ def init():
     scheduler.add_job(RelayService.openFan, id='powerOnFan', replace_existing=True, trigger='cron', hour='18', minute='1', second='0')
     scheduler.add_job(RelayService.closeFan, id='powerOffFan', replace_existing=True, trigger='cron', hour='19', minute='31', second='0')
     scheduler.add_job(RelayService.takePhoto, id="takePhoto", replace_existing=True, trigger='cron', hour='7,20', minute='2', second='0')
+    scheduler.add_job(RelayService.takePhoto, id="takePhoto2", replace_existing=True, trigger='cron', hour='6,19', minute='58', second='0')
 
 def startJobs():
     scheduler.start()
