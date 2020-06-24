@@ -2,6 +2,7 @@ import logging
 from time import sleep
 import cv2
 import datetime
+import random
 from tornado.options import options
 
 class CameraService:
@@ -19,7 +20,7 @@ class CameraService:
             sleep(2)
             break
 
-        filePath = options.image_dir + '/' + fileName + '.jpg'
+        filePath = options.image_dir + '/' + fileName + str(random.randrange(1, 10000)) + '.jpg'
         cv2.imwrite(filePath, image)
         camera.release()
         cv2.destroyAllWindows()
